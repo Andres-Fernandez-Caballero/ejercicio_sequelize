@@ -5,7 +5,7 @@ module.exports = {
  
  
     await queryInterface.addColumn(
-      'users',
+      'Users',
       'phoneNumber',
       {
         type: Sequelize.STRING,
@@ -15,6 +15,6 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
 
-    await queryInterface.removeColumn('users', 'phoneNumber');
+    await queryInterface.removeColumn('Users', 'phoneNumber');
   }
 };

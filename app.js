@@ -1,34 +1,41 @@
-const {User} = require('./database/models/index');
+const express = require('express');
+const userService = require('./user.service');
 
+const app = express();
 
-User.create(
-    {
-        name: 'Pedro',
-        email: 'pedro@mail.com',
-        password: '123',
-        rol: 1,
-        phoneNumber: '123456789',
-        cretedAt: new Date(),
-        updatedAt: new Date()
-    })
+app.get('/', (req, res) => {
+    const html = `
+    <h1>Api de usuarios</h1>
+    <ul>
+        <li><a href="/api/users">users con metodo then</a></li>
+        <li><a href="/apiv2/users">users con metodo await</a></li>
+    </ul>
+    `;
 
-async function getAllUsers() {
-    const users = await User.findAll();
-    users.forEach(user => {
-        console.log(user.name);
-    });
-}
+    res.send(html);
+});
 
-getAllUsers().then();
+app.get('/api/users', (req, res) => {
+    userService.getAllUsers()
+        .then(users => {
+            res.send(users);
+        })
+        .catch(err => {
+            res.send('algo salio mal, Detalle: ' + err);
+        });
+});
 
-// User.findAll()
-//     .then((users) => {
-//         users.forEach(user => {
-//             console.log(user.name);
-//         });
-//     })
-//     .catch((error) => {
-//         console.log(error);
-//     });
+app.get('/apiv2/users', async(req, res) => {
+    const users = await userService.getAllUsers();
+    res.json(users);
+});
 
-// create a new user
+app.get('/api/users/:id', async(req, res) => {
+    const user = await userService.getUserById(req.params.id);
+    if(user !== null) 
+        res.json(user);
+    else
+        res.send('No existe el usuario');
+});
+
+module.exports = app;
